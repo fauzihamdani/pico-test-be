@@ -5,10 +5,10 @@ import { mapsDirectionsUrl, placesNearbySearch } from "../helpers";
 
 export const getChat = async (req: Request, res: Response) => {
   try {
+    const API_KEY = process.env.GMAP_KEY;
     const message = req.body.message;
-    console.log(req.body.message);
-    console.log(req.body.lat);
-    console.log(req.body.lng);
+    const lat = req.body.lat;
+    const lng = req.body.lng;
 
     const ollama = new Ollama();
     const response = await ollama.chat({
@@ -48,8 +48,8 @@ export const getChat = async (req: Request, res: Response) => {
 
     if (parsed.intent === "directions" && parsed.destination !== null) {
       const getDirection = mapsDirectionsUrl(parsed.destination, {
-        lat: -7.2662016006134875,
-        lng: 112.7257439245999,
+        lat: lat,
+        lng: lng,
       });
 
       const data = [{ name: parsed.destination, link: getDirection }];
@@ -59,8 +59,8 @@ export const getChat = async (req: Request, res: Response) => {
 
     if (parsed.intent === "search_nearby" && parsed.category !== null) {
       const getDirection = await placesNearbySearch({
-        lat: -7.2662016006134875,
-        lng: 112.7257439245999,
+        lat: lat,
+        lng: lng,
         keyword: parsed.category,
       });
 
@@ -73,11 +73,9 @@ export const getChat = async (req: Request, res: Response) => {
 
       return res.status(200).json({ success: true, data: data });
     }
-
-    // res.status(200).json({ parsed });
   } catch (error) {
     console.log(error);
   }
 };
 
-//-7.2662016006134875, 112.7257439245999
+//-8.2662016006134875, 114.7254445
